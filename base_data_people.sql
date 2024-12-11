@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 11-12-2024 a las 20:32:58
+-- Tiempo de generación: 11-12-2024 a las 23:34:56
 -- Versión del servidor: 10.4.32-MariaDB
--- Versión de PHP: 8.1.25
+-- Versión de PHP: 8.0.30
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -77,6 +77,13 @@ CREATE TABLE `educational_levels` (
   `people_id` int(11) NOT NULL,
   `level_name` enum('universitaria','tecnica o tecnologica','secundaria incompleta','secundaria completa','primaria incompleta','primaria completa','ninguna') NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `educational_levels`
+--
+
+INSERT INTO `educational_levels` (`educational_levels_id`, `people_id`, `level_name`) VALUES
+(1, 1010, 'tecnica o tecnologica');
 
 -- --------------------------------------------------------
 
@@ -161,6 +168,13 @@ CREATE TABLE `marital_statuses` (
   `status_name` enum('soltero(@)','casado(@)','union libre','viudo(@)','separado(@)') NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Volcado de datos para la tabla `marital_statuses`
+--
+
+INSERT INTO `marital_statuses` (`marital_statuses_id`, `people_id`, `status_name`) VALUES
+(11, 0, 'soltero(@)');
+
 -- --------------------------------------------------------
 
 --
@@ -209,15 +223,33 @@ CREATE TABLE `people` (
   `phone` int(11) NOT NULL,
   `mail` varchar(255) NOT NULL,
   `gender` enum('Masculino','Femenino','Otro','Prefiero no decirlo') NOT NULL,
-  `occupation_id` int(11) NOT NULL,
-  `educational_level_id` int(11) NOT NULL,
+  `occupation_id` int(11) DEFAULT NULL,
+  `educational_level_id` int(11) DEFAULT NULL,
   `marital_status_id` int(11) DEFAULT NULL,
-  `differential_focus_id` int(11) NOT NULL,
+  `differential_focus_id` int(11) DEFAULT NULL,
   `age_group` enum('Adultos mayores (60 o mas años)','Adultez media','Adultos Jovenes','Niños') NOT NULL,
   `urban_area` longtext NOT NULL,
   `rural_area` varchar(255) NOT NULL,
-  `sisben_id` int(11) NOT NULL
+  `sisben_id` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `people`
+--
+
+INSERT INTO `people` (`people_id`, `full_name`, `phone`, `mail`, `gender`, `occupation_id`, `educational_level_id`, `marital_status_id`, `differential_focus_id`, `age_group`, `urban_area`, `rural_area`, `sisben_id`) VALUES
+(1010, 'luis', 2147483647, 'ltz@gmail.com', 'Masculino', NULL, NULL, 11, NULL, 'Adultos mayores (60 o mas años)', '', '', 11);
+
+--
+-- Disparadores `people`
+--
+DELIMITER $$
+CREATE TRIGGER `after_insert_people` AFTER INSERT ON `people` FOR EACH ROW BEGIN
+    INSERT INTO differential_focus_id (differential_focus_id, people_id, focus_name)
+    VALUES (NEW.differential_focus_id, NEW.people_id, 'reintegrado');
+END
+$$
+DELIMITER ;
 
 -- --------------------------------------------------------
 
@@ -308,6 +340,13 @@ CREATE TABLE `sisben` (
   `people_id` int(11) NOT NULL,
   `description` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `sisben`
+--
+
+INSERT INTO `sisben` (`sisben_id`, `people_id`, `description`) VALUES
+(11, 0, 0);
 
 -- --------------------------------------------------------
 
@@ -505,7 +544,7 @@ ALTER TABLE `training`
 -- AUTO_INCREMENT de la tabla `educational_levels`
 --
 ALTER TABLE `educational_levels`
-  MODIFY `educational_levels_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `educational_levels_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT de la tabla `indicator`
@@ -523,7 +562,7 @@ ALTER TABLE `indicator_result`
 -- AUTO_INCREMENT de la tabla `marital_statuses`
 --
 ALTER TABLE `marital_statuses`
-  MODIFY `marital_statuses_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `marital_statuses_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT de la tabla `meta_type`
@@ -547,7 +586,7 @@ ALTER TABLE `ods`
 -- AUTO_INCREMENT de la tabla `people`
 --
 ALTER TABLE `people`
-  MODIFY `people_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1008;
+  MODIFY `people_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1011;
 
 --
 -- AUTO_INCREMENT de la tabla `plan_desarrollo`
@@ -571,7 +610,7 @@ ALTER TABLE `sector`
 -- AUTO_INCREMENT de la tabla `sisben`
 --
 ALTER TABLE `sisben`
-  MODIFY `sisben_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `sisben_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 
 --
 -- AUTO_INCREMENT de la tabla `strategic_line`
