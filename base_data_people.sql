@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 11-12-2024 a las 23:34:56
+-- Tiempo de generación: 19-12-2024 a las 06:43:54
 -- Versión del servidor: 10.4.32-MariaDB
--- Versión de PHP: 8.0.30
+-- Versión de PHP: 8.1.25
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -20,6 +20,19 @@ SET time_zone = "+00:00";
 --
 -- Base de datos: `base_data_people`
 --
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `activities`
+--
+
+CREATE TABLE `activities` (
+  `id` int(11) NOT NULL,
+  `people_id` int(11) NOT NULL,
+  `activity_details` text NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -75,15 +88,30 @@ CREATE TABLE `differential_focus_id` (
 CREATE TABLE `educational_levels` (
   `educational_levels_id` int(11) NOT NULL,
   `people_id` int(11) NOT NULL,
+  `level_id` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `educational_level_types`
+--
+
+CREATE TABLE `educational_level_types` (
+  `level_id` int(11) NOT NULL,
   `level_name` enum('universitaria','tecnica o tecnologica','secundaria incompleta','secundaria completa','primaria incompleta','primaria completa','ninguna') NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Volcado de datos para la tabla `educational_levels`
+-- Volcado de datos para la tabla `educational_level_types`
 --
 
-INSERT INTO `educational_levels` (`educational_levels_id`, `people_id`, `level_name`) VALUES
-(1, 1010, 'tecnica o tecnologica');
+INSERT INTO `educational_level_types` (`level_id`, `level_name`) VALUES
+(1, 'universitaria'),
+(2, 'tecnica o tecnologica'),
+(3, 'secundaria completa'),
+(4, 'primaria completa'),
+(5, 'ninguna');
 
 -- --------------------------------------------------------
 
@@ -135,6 +163,32 @@ CREATE TABLE `entrepreneur` (
 -- --------------------------------------------------------
 
 --
+-- Estructura de tabla para la tabla `focus_types`
+--
+
+CREATE TABLE `focus_types` (
+  `focus_id` int(11) NOT NULL,
+  `focus_name` varchar(255) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `focus_types`
+--
+
+INSERT INTO `focus_types` (`focus_id`, `focus_name`) VALUES
+(8, 'adultos mayores'),
+(2, 'desmovilizado'),
+(3, 'extrema pobreza'),
+(7, 'mujeres cabeza de familia'),
+(9, 'ninos ninas y adolecentes'),
+(6, 'personas en condicion de discapacidad'),
+(5, 'poblacion LGBTIQ'),
+(4, 'poblacion victima del conflicto armado'),
+(1, 'reintegrado');
+
+-- --------------------------------------------------------
+
+--
 -- Estructura de tabla para la tabla `indicator`
 --
 
@@ -167,13 +221,6 @@ CREATE TABLE `marital_statuses` (
   `people_id` int(11) NOT NULL,
   `status_name` enum('soltero(@)','casado(@)','union libre','viudo(@)','separado(@)') NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Volcado de datos para la tabla `marital_statuses`
---
-
-INSERT INTO `marital_statuses` (`marital_statuses_id`, `people_id`, `status_name`) VALUES
-(11, 0, 'soltero(@)');
 
 -- --------------------------------------------------------
 
@@ -223,33 +270,22 @@ CREATE TABLE `people` (
   `phone` int(11) NOT NULL,
   `mail` varchar(255) NOT NULL,
   `gender` enum('Masculino','Femenino','Otro','Prefiero no decirlo') NOT NULL,
-  `occupation_id` int(11) DEFAULT NULL,
-  `educational_level_id` int(11) DEFAULT NULL,
-  `marital_status_id` int(11) DEFAULT NULL,
-  `differential_focus_id` int(11) DEFAULT NULL,
   `age_group` enum('Adultos mayores (60 o mas años)','Adultez media','Adultos Jovenes','Niños') NOT NULL,
-  `urban_area` longtext NOT NULL,
-  `rural_area` varchar(255) NOT NULL,
-  `sisben_id` int(11) DEFAULT NULL
+  `is_urban` tinyint(1) DEFAULT NULL,
+  `urban_area` tinyint(1) DEFAULT NULL,
+  `qr_code_path` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Volcado de datos para la tabla `people`
---
-
-INSERT INTO `people` (`people_id`, `full_name`, `phone`, `mail`, `gender`, `occupation_id`, `educational_level_id`, `marital_status_id`, `differential_focus_id`, `age_group`, `urban_area`, `rural_area`, `sisben_id`) VALUES
-(1010, 'luis', 2147483647, 'ltz@gmail.com', 'Masculino', NULL, NULL, 11, NULL, 'Adultos mayores (60 o mas años)', '', '', 11);
+-- --------------------------------------------------------
 
 --
--- Disparadores `people`
+-- Estructura de tabla para la tabla `people_focus`
 --
-DELIMITER $$
-CREATE TRIGGER `after_insert_people` AFTER INSERT ON `people` FOR EACH ROW BEGIN
-    INSERT INTO differential_focus_id (differential_focus_id, people_id, focus_name)
-    VALUES (NEW.differential_focus_id, NEW.people_id, 'reintegrado');
-END
-$$
-DELIMITER ;
+
+CREATE TABLE `people_focus` (
+  `people_id` int(11) NOT NULL,
+  `focus_id` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -341,13 +377,6 @@ CREATE TABLE `sisben` (
   `description` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Volcado de datos para la tabla `sisben`
---
-
-INSERT INTO `sisben` (`sisben_id`, `people_id`, `description`) VALUES
-(11, 0, 0);
-
 -- --------------------------------------------------------
 
 --
@@ -380,6 +409,13 @@ CREATE TABLE `training` (
 --
 
 --
+-- Indices de la tabla `activities`
+--
+ALTER TABLE `activities`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `people_id` (`people_id`);
+
+--
 -- Indices de la tabla `contact`
 --
 ALTER TABLE `contact`
@@ -404,8 +440,16 @@ ALTER TABLE `differential_focus_id`
 -- Indices de la tabla `educational_levels`
 --
 ALTER TABLE `educational_levels`
-  ADD PRIMARY KEY (`educational_levels_id`) USING BTREE,
-  ADD UNIQUE KEY `un` (`people_id`);
+  ADD PRIMARY KEY (`educational_levels_id`),
+  ADD UNIQUE KEY `un` (`people_id`),
+  ADD KEY `level_id` (`level_id`);
+
+--
+-- Indices de la tabla `educational_level_types`
+--
+ALTER TABLE `educational_level_types`
+  ADD PRIMARY KEY (`level_id`),
+  ADD UNIQUE KEY `level_name` (`level_name`);
 
 --
 -- Indices de la tabla `emergency`
@@ -427,6 +471,13 @@ ALTER TABLE `employee_private_sector`
 ALTER TABLE `entrepreneur`
   ADD PRIMARY KEY (`entrepreneurship_id`),
   ADD KEY `fk_entrepreneur_people` (`people_id`);
+
+--
+-- Indices de la tabla `focus_types`
+--
+ALTER TABLE `focus_types`
+  ADD PRIMARY KEY (`focus_id`),
+  ADD UNIQUE KEY `focus_name` (`focus_name`);
 
 --
 -- Indices de la tabla `indicator`
@@ -474,11 +525,15 @@ ALTER TABLE `ods`
 --
 ALTER TABLE `people`
   ADD PRIMARY KEY (`people_id`),
-  ADD KEY `fk_people_sisben` (`sisben_id`),
-  ADD KEY `fk_people_differential_focus_id` (`differential_focus_id`),
-  ADD KEY `fk_people_educational_level_id` (`educational_level_id`),
-  ADD KEY `fk_people_marital_status_id` (`marital_status_id`),
-  ADD KEY `fk_people_occupation_id` (`occupation_id`);
+  ADD KEY `idx_full_name` (`full_name`),
+  ADD KEY `idx_gender` (`gender`);
+
+--
+-- Indices de la tabla `people_focus`
+--
+ALTER TABLE `people_focus`
+  ADD PRIMARY KEY (`people_id`,`focus_id`),
+  ADD KEY `focus_id` (`focus_id`);
 
 --
 -- Indices de la tabla `plan_desarrollo`
@@ -541,10 +596,22 @@ ALTER TABLE `training`
 --
 
 --
+-- AUTO_INCREMENT de la tabla `activities`
+--
+ALTER TABLE `activities`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+
+--
 -- AUTO_INCREMENT de la tabla `educational_levels`
 --
 ALTER TABLE `educational_levels`
-  MODIFY `educational_levels_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `educational_levels_id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de la tabla `focus_types`
+--
+ALTER TABLE `focus_types`
+  MODIFY `focus_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT de la tabla `indicator`
@@ -562,7 +629,7 @@ ALTER TABLE `indicator_result`
 -- AUTO_INCREMENT de la tabla `marital_statuses`
 --
 ALTER TABLE `marital_statuses`
-  MODIFY `marital_statuses_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+  MODIFY `marital_statuses_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
 
 --
 -- AUTO_INCREMENT de la tabla `meta_type`
@@ -574,19 +641,13 @@ ALTER TABLE `meta_type`
 -- AUTO_INCREMENT de la tabla `occupations`
 --
 ALTER TABLE `occupations`
-  MODIFY `occupations_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `occupations_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT de la tabla `ods`
 --
 ALTER TABLE `ods`
   MODIFY `ods_id` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT de la tabla `people`
---
-ALTER TABLE `people`
-  MODIFY `people_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1011;
 
 --
 -- AUTO_INCREMENT de la tabla `plan_desarrollo`
@@ -610,7 +671,7 @@ ALTER TABLE `sector`
 -- AUTO_INCREMENT de la tabla `sisben`
 --
 ALTER TABLE `sisben`
-  MODIFY `sisben_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
+  MODIFY `sisben_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 
 --
 -- AUTO_INCREMENT de la tabla `strategic_line`
@@ -621,6 +682,12 @@ ALTER TABLE `strategic_line`
 --
 -- Restricciones para tablas volcadas
 --
+
+--
+-- Filtros para la tabla `activities`
+--
+ALTER TABLE `activities`
+  ADD CONSTRAINT `activities_ibfk_1` FOREIGN KEY (`people_id`) REFERENCES `people` (`people_id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Filtros para la tabla `contact`
@@ -635,6 +702,19 @@ ALTER TABLE `contractor`
   ADD CONSTRAINT `fk_contractor_to_people` FOREIGN KEY (`people_id`) REFERENCES `people` (`people_id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
+-- Filtros para la tabla `differential_focus_id`
+--
+ALTER TABLE `differential_focus_id`
+  ADD CONSTRAINT `differential_focus_id_ibfk_1` FOREIGN KEY (`people_id`) REFERENCES `people` (`people_id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Filtros para la tabla `educational_levels`
+--
+ALTER TABLE `educational_levels`
+  ADD CONSTRAINT `educational_levels_ibfk_1` FOREIGN KEY (`level_id`) REFERENCES `educational_level_types` (`level_id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `educational_levels_ibfk_2` FOREIGN KEY (`people_id`) REFERENCES `people` (`people_id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
 -- Filtros para la tabla `emergency`
 --
 ALTER TABLE `emergency`
@@ -645,6 +725,12 @@ ALTER TABLE `emergency`
 --
 ALTER TABLE `employee_private_sector`
   ADD CONSTRAINT `fk_employee_private_to_people` FOREIGN KEY (`people_id`) REFERENCES `people` (`people_id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Filtros para la tabla `entrepreneur`
+--
+ALTER TABLE `entrepreneur`
+  ADD CONSTRAINT `entrepreneur_ibfk_1` FOREIGN KEY (`people_id`) REFERENCES `people` (`people_id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Filtros para la tabla `indicator`
@@ -659,21 +745,29 @@ ALTER TABLE `indicator_result`
   ADD CONSTRAINT `fk_indicator_result_to_line` FOREIGN KEY (`line_id`) REFERENCES `strategic_line` (`line_id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
+-- Filtros para la tabla `marital_statuses`
+--
+ALTER TABLE `marital_statuses`
+  ADD CONSTRAINT `marital_statuses_ibfk_1` FOREIGN KEY (`people_id`) REFERENCES `people` (`people_id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Filtros para la tabla `occupations`
+--
+ALTER TABLE `occupations`
+  ADD CONSTRAINT `occupations_ibfk_1` FOREIGN KEY (`people_id`) REFERENCES `people` (`people_id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
 -- Filtros para la tabla `ods`
 --
 ALTER TABLE `ods`
   ADD CONSTRAINT `fk_ods_to_meta` FOREIGN KEY (`meta_id`) REFERENCES `meta_type` (`meta_id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
--- Filtros para la tabla `people`
+-- Filtros para la tabla `people_focus`
 --
-ALTER TABLE `people`
-  ADD CONSTRAINT `fk_people_educational_level_id` FOREIGN KEY (`educational_level_id`) REFERENCES `educational_levels` (`educational_levels_id`),
-  ADD CONSTRAINT `fk_people_educational_levels` FOREIGN KEY (`educational_level_id`) REFERENCES `educational_levels` (`educational_levels_id`),
-  ADD CONSTRAINT `fk_people_to_differential_focus` FOREIGN KEY (`differential_focus_id`) REFERENCES `differential_focus_id` (`people_id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `fk_people_to_marital_status` FOREIGN KEY (`marital_status_id`) REFERENCES `marital_statuses` (`marital_statuses_id`) ON DELETE SET NULL ON UPDATE CASCADE,
-  ADD CONSTRAINT `fk_people_to_occupation` FOREIGN KEY (`occupation_id`) REFERENCES `occupations` (`occupations_id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `fk_people_to_sisben` FOREIGN KEY (`sisben_id`) REFERENCES `sisben` (`sisben_id`) ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE `people_focus`
+  ADD CONSTRAINT `people_focus_ibfk_1` FOREIGN KEY (`people_id`) REFERENCES `people` (`people_id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `people_focus_ibfk_2` FOREIGN KEY (`focus_id`) REFERENCES `focus_types` (`focus_id`) ON DELETE CASCADE;
 
 --
 -- Filtros para la tabla `population`
@@ -694,6 +788,12 @@ ALTER TABLE `public_sector_employee`
   ADD CONSTRAINT `fk_public_employee_to_people` FOREIGN KEY (`people_id`) REFERENCES `people` (`people_id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
+-- Filtros para la tabla `sisben`
+--
+ALTER TABLE `sisben`
+  ADD CONSTRAINT `sisben_ibfk_1` FOREIGN KEY (`people_id`) REFERENCES `people` (`people_id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
 -- Filtros para la tabla `strategic_line`
 --
 ALTER TABLE `strategic_line`
@@ -703,7 +803,8 @@ ALTER TABLE `strategic_line`
 -- Filtros para la tabla `training`
 --
 ALTER TABLE `training`
-  ADD CONSTRAINT `fk_training_to_educational_levels` FOREIGN KEY (`educational_levels_id`) REFERENCES `educational_levels` (`educational_levels_id`) ON DELETE CASCADE ON UPDATE CASCADE;
+  ADD CONSTRAINT `fk_training_to_educational_levels` FOREIGN KEY (`educational_levels_id`) REFERENCES `educational_levels` (`educational_levels_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `training_ibfk_1` FOREIGN KEY (`people_id`) REFERENCES `people` (`people_id`) ON DELETE CASCADE ON UPDATE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
