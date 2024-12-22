@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 22-12-2024 a las 07:21:48
+-- Tiempo de generación: 22-12-2024 a las 07:32:49
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.1.25
 
@@ -277,7 +277,7 @@ CREATE TABLE `ods` (
 --
 
 CREATE TABLE `people` (
-  `numero_documento` int(11) NOT NULL,
+  `people_id` int(11) NOT NULL,
   `tipo_documento` enum('registro civil','tarjeta de identidad','cedula de ciudadania','cedula de extranjeria','pasaporte','permiso de permanencia temporal') NOT NULL,
   `nombres_completos` varchar(255) NOT NULL,
   `correo` varchar(255) NOT NULL,
@@ -526,7 +526,7 @@ ALTER TABLE `ods`
 -- Indices de la tabla `people`
 --
 ALTER TABLE `people`
-  ADD PRIMARY KEY (`numero_documento`),
+  ADD PRIMARY KEY (`people_id`),
   ADD KEY `idx_full_name` (`nombres_completos`),
   ADD KEY `idx_gender` (`genero`);
 
@@ -682,56 +682,56 @@ ALTER TABLE `strategic_line`
 -- Filtros para la tabla `activities`
 --
 ALTER TABLE `activities`
-  ADD CONSTRAINT `activities_ibfk_1` FOREIGN KEY (`people_id`) REFERENCES `people` (`numero_documento`) ON DELETE CASCADE ON UPDATE CASCADE;
+  ADD CONSTRAINT `activities_ibfk_1` FOREIGN KEY (`people_id`) REFERENCES `people` (`people_id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Filtros para la tabla `contact`
 --
 ALTER TABLE `contact`
-  ADD CONSTRAINT `fk_contact_to_people` FOREIGN KEY (`people_id`) REFERENCES `people` (`numero_documento`) ON DELETE CASCADE ON UPDATE CASCADE;
+  ADD CONSTRAINT `fk_contact_to_people` FOREIGN KEY (`people_id`) REFERENCES `people` (`people_id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Filtros para la tabla `contractor`
 --
 ALTER TABLE `contractor`
-  ADD CONSTRAINT `fk_contractor_to_people` FOREIGN KEY (`people_id`) REFERENCES `people` (`numero_documento`) ON DELETE CASCADE ON UPDATE CASCADE;
+  ADD CONSTRAINT `fk_contractor_to_people` FOREIGN KEY (`people_id`) REFERENCES `people` (`people_id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Filtros para la tabla `differential_focus_id`
 --
 ALTER TABLE `differential_focus_id`
-  ADD CONSTRAINT `differential_focus_id_ibfk_1` FOREIGN KEY (`people_id`) REFERENCES `people` (`numero_documento`) ON DELETE CASCADE ON UPDATE CASCADE;
+  ADD CONSTRAINT `differential_focus_id_ibfk_1` FOREIGN KEY (`people_id`) REFERENCES `people` (`people_id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Filtros para la tabla `educational_levels`
 --
 ALTER TABLE `educational_levels`
   ADD CONSTRAINT `educational_levels_ibfk_1` FOREIGN KEY (`level_id`) REFERENCES `educational_level_types` (`level_id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `educational_levels_ibfk_2` FOREIGN KEY (`people_id`) REFERENCES `people` (`numero_documento`) ON DELETE CASCADE ON UPDATE CASCADE;
+  ADD CONSTRAINT `educational_levels_ibfk_2` FOREIGN KEY (`people_id`) REFERENCES `people` (`people_id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Filtros para la tabla `emergency`
 --
 ALTER TABLE `emergency`
-  ADD CONSTRAINT `fk_emergency_to_people` FOREIGN KEY (`people_id`) REFERENCES `people` (`numero_documento`) ON DELETE CASCADE ON UPDATE CASCADE;
+  ADD CONSTRAINT `fk_emergency_to_people` FOREIGN KEY (`people_id`) REFERENCES `people` (`people_id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Filtros para la tabla `employee_private_sector`
 --
 ALTER TABLE `employee_private_sector`
-  ADD CONSTRAINT `fk_employee_private_to_people` FOREIGN KEY (`people_id`) REFERENCES `people` (`numero_documento`) ON DELETE CASCADE ON UPDATE CASCADE;
+  ADD CONSTRAINT `fk_employee_private_to_people` FOREIGN KEY (`people_id`) REFERENCES `people` (`people_id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Filtros para la tabla `entrepreneur`
 --
 ALTER TABLE `entrepreneur`
-  ADD CONSTRAINT `entrepreneur_ibfk_1` FOREIGN KEY (`people_id`) REFERENCES `people` (`numero_documento`) ON DELETE CASCADE ON UPDATE CASCADE;
+  ADD CONSTRAINT `entrepreneur_ibfk_1` FOREIGN KEY (`people_id`) REFERENCES `people` (`people_id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Filtros para la tabla `formation_occupations`
 --
 ALTER TABLE `formation_occupations`
-  ADD CONSTRAINT `formation_occupations_ibfk_1` FOREIGN KEY (`people_id`) REFERENCES `people` (`numero_documento`) ON DELETE CASCADE ON UPDATE CASCADE;
+  ADD CONSTRAINT `formation_occupations_ibfk_1` FOREIGN KEY (`people_id`) REFERENCES `people` (`people_id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Filtros para la tabla `indicator`
@@ -749,7 +749,7 @@ ALTER TABLE `indicator_result`
 -- Filtros para la tabla `marital_statuses`
 --
 ALTER TABLE `marital_statuses`
-  ADD CONSTRAINT `marital_statuses_ibfk_1` FOREIGN KEY (`people_id`) REFERENCES `people` (`numero_documento`) ON DELETE CASCADE ON UPDATE CASCADE;
+  ADD CONSTRAINT `marital_statuses_ibfk_1` FOREIGN KEY (`people_id`) REFERENCES `people` (`people_id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Filtros para la tabla `ods`
@@ -761,14 +761,14 @@ ALTER TABLE `ods`
 -- Filtros para la tabla `people_focus`
 --
 ALTER TABLE `people_focus`
-  ADD CONSTRAINT `people_focus_ibfk_1` FOREIGN KEY (`people_id`) REFERENCES `people` (`numero_documento`) ON DELETE CASCADE,
+  ADD CONSTRAINT `people_focus_ibfk_1` FOREIGN KEY (`people_id`) REFERENCES `people` (`people_id`) ON DELETE CASCADE,
   ADD CONSTRAINT `people_focus_ibfk_2` FOREIGN KEY (`focus_id`) REFERENCES `focus_types` (`focus_id`) ON DELETE CASCADE;
 
 --
 -- Filtros para la tabla `population`
 --
 ALTER TABLE `population`
-  ADD CONSTRAINT `fk_population_to_people` FOREIGN KEY (`people_id`) REFERENCES `people` (`numero_documento`) ON DELETE CASCADE ON UPDATE CASCADE;
+  ADD CONSTRAINT `fk_population_to_people` FOREIGN KEY (`people_id`) REFERENCES `people` (`people_id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Filtros para la tabla `program`
@@ -780,7 +780,7 @@ ALTER TABLE `program`
 -- Filtros para la tabla `public_sector_employee`
 --
 ALTER TABLE `public_sector_employee`
-  ADD CONSTRAINT `fk_public_employee_to_people` FOREIGN KEY (`people_id`) REFERENCES `people` (`numero_documento`) ON DELETE CASCADE ON UPDATE CASCADE;
+  ADD CONSTRAINT `fk_public_employee_to_people` FOREIGN KEY (`people_id`) REFERENCES `people` (`people_id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Filtros para la tabla `strategic_line`
@@ -793,7 +793,7 @@ ALTER TABLE `strategic_line`
 --
 ALTER TABLE `training`
   ADD CONSTRAINT `fk_training_to_educational_levels` FOREIGN KEY (`educational_levels_id`) REFERENCES `educational_levels` (`educational_levels_id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `training_ibfk_1` FOREIGN KEY (`people_id`) REFERENCES `people` (`numero_documento`) ON DELETE CASCADE ON UPDATE CASCADE;
+  ADD CONSTRAINT `training_ibfk_1` FOREIGN KEY (`people_id`) REFERENCES `people` (`people_id`) ON DELETE CASCADE ON UPDATE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
