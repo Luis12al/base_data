@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 19-12-2024 a las 06:43:54
+-- Tiempo de generación: 22-12-2024 a las 06:39:27
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.1.25
 
@@ -43,13 +43,13 @@ CREATE TABLE `activities` (
 CREATE TABLE `contact` (
   `contact_id` int(11) NOT NULL,
   `people_id` int(11) DEFAULT NULL,
-  `main_phone` varchar(255) DEFAULT NULL,
-  `secondary_phone` varchar(255) DEFAULT NULL,
-  `email` varchar(255) DEFAULT NULL,
-  `residence_address` varchar(255) DEFAULT NULL,
-  `municipality` varchar(255) DEFAULT NULL,
-  `neighborhood` varchar(255) DEFAULT NULL,
-  `township_commune` varchar(255) DEFAULT NULL
+  `telefono_principal` varchar(15) NOT NULL DEFAULT 'Sin especificar',
+  `telefono_secundario` varchar(15) NOT NULL DEFAULT 'Sin especificar',
+  `correo_electronico` varchar(255) NOT NULL DEFAULT 'correo@ejemplo.com',
+  `direccion_residencia` varchar(255) NOT NULL DEFAULT 'No especificada',
+  `municipio` varchar(100) NOT NULL DEFAULT 'No especificado',
+  `barrio_vereda` varchar(100) NOT NULL DEFAULT 'No especificado',
+  `comuna_corregimiento` varchar(100) NOT NULL DEFAULT 'No especificado'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -76,7 +76,18 @@ CREATE TABLE `contractor` (
 CREATE TABLE `differential_focus_id` (
   `differential_focus_id` int(11) NOT NULL,
   `people_id` int(11) NOT NULL,
-  `focus_name` enum('reintegrado','desmovilizado','extrema pobreza','poblacion victima del conflicto armado','poblacion LGBTIQ','personas en condicion de discapacidad','mujeres cabeza de familia','adultos mayores','ninos ninas y adolecentes') NOT NULL
+  `focus_name` enum('reintegrado','desmovilizado','extrema pobreza','poblacion victima del conflicto armado','poblacion LGBTIQ','personas en condicion de discapacidad','mujeres cabeza de familia','adultos mayores','ninos ninas y adolecentes') NOT NULL,
+  `grupo_etnico` enum('Negro, Afrocolombiano, raizal o palanquero (NARP)','Otro','Ninguno') NOT NULL DEFAULT 'Ninguno',
+  `acreditacion_grupo_etnico` varchar(255) DEFAULT NULL,
+  `certificado_discapacidad` tinyint(1) NOT NULL DEFAULT 0,
+  `tipo_discapacidad` enum('Física','Auditiva','Visual','Intelectual','Psicológica','Ninguna') NOT NULL DEFAULT 'Ninguna',
+  `cuidador_cuidadora` tinyint(1) NOT NULL DEFAULT 0,
+  `campesino_campesina` tinyint(1) NOT NULL DEFAULT 0,
+  `victima_conflicto` tinyint(1) NOT NULL DEFAULT 0,
+  `reincorporacion_reintegracion` tinyint(1) NOT NULL DEFAULT 0,
+  `madre_cabeza_familia` tinyint(1) NOT NULL DEFAULT 0,
+  `madre_gestante_lactante` tinyint(1) NOT NULL DEFAULT 0,
+  `sisben` enum('A','B','C','D','Ninguno') NOT NULL DEFAULT 'Ninguno'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -125,7 +136,6 @@ CREATE TABLE `emergency` (
   `blood_type` varchar(255) DEFAULT NULL,
   `contact_name` varchar(255) DEFAULT NULL,
   `contact_phone` varchar(255) DEFAULT NULL,
-  `activity_type` varchar(255) DEFAULT NULL,
   `contact_relationship` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -189,6 +199,20 @@ INSERT INTO `focus_types` (`focus_id`, `focus_name`) VALUES
 -- --------------------------------------------------------
 
 --
+-- Estructura de tabla para la tabla `formation_occupations`
+--
+
+CREATE TABLE `formation_occupations` (
+  `formation_occupations` int(11) NOT NULL,
+  `people_id` int(11) NOT NULL,
+  `nivel_academico` enum('Primaria','Básica Secundaria','Bachiller','Técnico','Tecnólogo','Profesional','Especialización','Maestría','Doctorado','Ninguno') NOT NULL DEFAULT 'Ninguno',
+  `ocupacion` enum('Empleado público','Empleado privado','Desempleado/a','Contratista del Estado','Emprendedor','Actividad informal') NOT NULL DEFAULT 'Desempleado/a',
+  `nombre_empresa` varchar(255) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
 -- Estructura de tabla para la tabla `indicator`
 --
 
@@ -237,18 +261,6 @@ CREATE TABLE `meta_type` (
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `occupations`
---
-
-CREATE TABLE `occupations` (
-  `occupations_id` int(11) NOT NULL,
-  `people_id` int(11) NOT NULL,
-  `name` varchar(255) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
--- --------------------------------------------------------
-
---
 -- Estructura de tabla para la tabla `ods`
 --
 
@@ -266,14 +278,17 @@ CREATE TABLE `ods` (
 
 CREATE TABLE `people` (
   `people_id` int(11) NOT NULL,
-  `full_name` varchar(255) NOT NULL,
-  `phone` int(11) NOT NULL,
-  `mail` varchar(255) NOT NULL,
-  `gender` enum('Masculino','Femenino','Otro','Prefiero no decirlo') NOT NULL,
-  `age_group` enum('Adultos mayores (60 o mas años)','Adultez media','Adultos Jovenes','Niños') NOT NULL,
-  `is_urban` tinyint(1) DEFAULT NULL,
-  `urban_area` tinyint(1) DEFAULT NULL,
-  `qr_code_path` varchar(255) DEFAULT NULL
+  `tipo_documento` enum('registro civil','tarjeta de identidad','cedula de ciudadania','cedula de extranjeria','pasaporte','permiso de permanencia temporal') NOT NULL,
+  `nombres_completos` varchar(255) NOT NULL,
+  `numero_documento` int(11) NOT NULL,
+  `correo` varchar(255) NOT NULL,
+  `genero` enum('Masculino','Femenino','Otro','Prefiero no decirlo') NOT NULL,
+  `qr_code_path` varchar(255) DEFAULT NULL,
+  `lugar_expedicion` varchar(255) DEFAULT NULL,
+  `primer_apellido` varchar(255) NOT NULL,
+  `segundo_apellido` varchar(255) NOT NULL,
+  `fecha_nacimiento` date DEFAULT NULL,
+  `nacionalidad` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -363,18 +378,6 @@ CREATE TABLE `sector` (
   `sector_id` int(11) NOT NULL,
   `plan_id` int(11) NOT NULL,
   `sector_name` varchar(255) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
--- --------------------------------------------------------
-
---
--- Estructura de tabla para la tabla `sisben`
---
-
-CREATE TABLE `sisben` (
-  `sisben_id` int(11) NOT NULL,
-  `people_id` int(11) NOT NULL,
-  `description` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -480,6 +483,13 @@ ALTER TABLE `focus_types`
   ADD UNIQUE KEY `focus_name` (`focus_name`);
 
 --
+-- Indices de la tabla `formation_occupations`
+--
+ALTER TABLE `formation_occupations`
+  ADD PRIMARY KEY (`formation_occupations`),
+  ADD UNIQUE KEY `people_id` (`people_id`);
+
+--
 -- Indices de la tabla `indicator`
 --
 ALTER TABLE `indicator`
@@ -507,13 +517,6 @@ ALTER TABLE `meta_type`
   ADD PRIMARY KEY (`meta_id`);
 
 --
--- Indices de la tabla `occupations`
---
-ALTER TABLE `occupations`
-  ADD PRIMARY KEY (`occupations_id`),
-  ADD UNIQUE KEY `people_id` (`people_id`);
-
---
 -- Indices de la tabla `ods`
 --
 ALTER TABLE `ods`
@@ -525,8 +528,8 @@ ALTER TABLE `ods`
 --
 ALTER TABLE `people`
   ADD PRIMARY KEY (`people_id`),
-  ADD KEY `idx_full_name` (`full_name`),
-  ADD KEY `idx_gender` (`gender`);
+  ADD KEY `idx_full_name` (`nombres_completos`),
+  ADD KEY `idx_gender` (`genero`);
 
 --
 -- Indices de la tabla `people_focus`
@@ -570,13 +573,6 @@ ALTER TABLE `sector`
   ADD UNIQUE KEY `plan_id` (`plan_id`);
 
 --
--- Indices de la tabla `sisben`
---
-ALTER TABLE `sisben`
-  ADD PRIMARY KEY (`sisben_id`),
-  ADD UNIQUE KEY `people_id` (`people_id`);
-
---
 -- Indices de la tabla `strategic_line`
 --
 ALTER TABLE `strategic_line`
@@ -599,19 +595,31 @@ ALTER TABLE `training`
 -- AUTO_INCREMENT de la tabla `activities`
 --
 ALTER TABLE `activities`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+
+--
+-- AUTO_INCREMENT de la tabla `differential_focus_id`
+--
+ALTER TABLE `differential_focus_id`
+  MODIFY `differential_focus_id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT de la tabla `educational_levels`
 --
 ALTER TABLE `educational_levels`
-  MODIFY `educational_levels_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `educational_levels_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT de la tabla `focus_types`
 --
 ALTER TABLE `focus_types`
   MODIFY `focus_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+
+--
+-- AUTO_INCREMENT de la tabla `formation_occupations`
+--
+ALTER TABLE `formation_occupations`
+  MODIFY `formation_occupations` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT de la tabla `indicator`
@@ -638,12 +646,6 @@ ALTER TABLE `meta_type`
   MODIFY `meta_id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT de la tabla `occupations`
---
-ALTER TABLE `occupations`
-  MODIFY `occupations_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
-
---
 -- AUTO_INCREMENT de la tabla `ods`
 --
 ALTER TABLE `ods`
@@ -666,12 +668,6 @@ ALTER TABLE `program`
 --
 ALTER TABLE `sector`
   MODIFY `sector_id` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT de la tabla `sisben`
---
-ALTER TABLE `sisben`
-  MODIFY `sisben_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 
 --
 -- AUTO_INCREMENT de la tabla `strategic_line`
@@ -733,6 +729,12 @@ ALTER TABLE `entrepreneur`
   ADD CONSTRAINT `entrepreneur_ibfk_1` FOREIGN KEY (`people_id`) REFERENCES `people` (`people_id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
+-- Filtros para la tabla `formation_occupations`
+--
+ALTER TABLE `formation_occupations`
+  ADD CONSTRAINT `formation_occupations_ibfk_1` FOREIGN KEY (`people_id`) REFERENCES `people` (`people_id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
 -- Filtros para la tabla `indicator`
 --
 ALTER TABLE `indicator`
@@ -749,12 +751,6 @@ ALTER TABLE `indicator_result`
 --
 ALTER TABLE `marital_statuses`
   ADD CONSTRAINT `marital_statuses_ibfk_1` FOREIGN KEY (`people_id`) REFERENCES `people` (`people_id`) ON DELETE CASCADE ON UPDATE CASCADE;
-
---
--- Filtros para la tabla `occupations`
---
-ALTER TABLE `occupations`
-  ADD CONSTRAINT `occupations_ibfk_1` FOREIGN KEY (`people_id`) REFERENCES `people` (`people_id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Filtros para la tabla `ods`
@@ -786,12 +782,6 @@ ALTER TABLE `program`
 --
 ALTER TABLE `public_sector_employee`
   ADD CONSTRAINT `fk_public_employee_to_people` FOREIGN KEY (`people_id`) REFERENCES `people` (`people_id`) ON DELETE CASCADE ON UPDATE CASCADE;
-
---
--- Filtros para la tabla `sisben`
---
-ALTER TABLE `sisben`
-  ADD CONSTRAINT `sisben_ibfk_1` FOREIGN KEY (`people_id`) REFERENCES `people` (`people_id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Filtros para la tabla `strategic_line`
