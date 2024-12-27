@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 22-12-2024 a las 07:32:49
+-- Tiempo de generación: 27-12-2024 a las 21:22:54
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.1.25
 
@@ -41,7 +41,6 @@ CREATE TABLE `activities` (
 --
 
 CREATE TABLE `contact` (
-  `contact_id` int(11) NOT NULL,
   `people_id` int(11) DEFAULT NULL,
   `telefono_principal` varchar(15) NOT NULL DEFAULT 'Sin especificar',
   `telefono_secundario` varchar(15) NOT NULL DEFAULT 'Sin especificar',
@@ -59,7 +58,6 @@ CREATE TABLE `contact` (
 --
 
 CREATE TABLE `contractor` (
-  `contractor_id` int(11) NOT NULL,
   `people_id` int(11) DEFAULT NULL,
   `entity` varchar(255) DEFAULT NULL,
   `contract_type` varchar(255) DEFAULT NULL,
@@ -70,11 +68,10 @@ CREATE TABLE `contractor` (
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `differential_focus_id`
+-- Estructura de tabla para la tabla `differential_focus`
 --
 
-CREATE TABLE `differential_focus_id` (
-  `differential_focus_id` int(11) NOT NULL,
+CREATE TABLE `differential_focus` (
   `people_id` int(11) NOT NULL,
   `focus_name` enum('reintegrado','desmovilizado','extrema pobreza','poblacion victima del conflicto armado','poblacion LGBTIQ','personas en condicion de discapacidad','mujeres cabeza de familia','adultos mayores','ninos ninas y adolecentes') NOT NULL,
   `grupo_etnico` enum('Negro, Afrocolombiano, raizal o palanquero (NARP)','Otro','Ninguno') NOT NULL DEFAULT 'Ninguno',
@@ -131,7 +128,6 @@ INSERT INTO `educational_level_types` (`level_id`, `level_name`) VALUES
 --
 
 CREATE TABLE `emergency` (
-  `emergency_id` int(11) NOT NULL,
   `people_id` int(11) DEFAULT NULL,
   `blood_type` varchar(255) DEFAULT NULL,
   `contact_name` varchar(255) DEFAULT NULL,
@@ -265,7 +261,6 @@ CREATE TABLE `meta_type` (
 --
 
 CREATE TABLE `ods` (
-  `ods_id` int(11) NOT NULL,
   `meta_id` int(11) NOT NULL,
   `ods_description` text NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -421,21 +416,18 @@ ALTER TABLE `activities`
 -- Indices de la tabla `contact`
 --
 ALTER TABLE `contact`
-  ADD PRIMARY KEY (`contact_id`),
   ADD KEY `fk_contact_people` (`people_id`);
 
 --
 -- Indices de la tabla `contractor`
 --
 ALTER TABLE `contractor`
-  ADD PRIMARY KEY (`contractor_id`),
   ADD KEY `fk_contractor_people` (`people_id`);
 
 --
--- Indices de la tabla `differential_focus_id`
+-- Indices de la tabla `differential_focus`
 --
-ALTER TABLE `differential_focus_id`
-  ADD PRIMARY KEY (`differential_focus_id`),
+ALTER TABLE `differential_focus`
   ADD UNIQUE KEY `people_id` (`people_id`);
 
 --
@@ -457,7 +449,6 @@ ALTER TABLE `educational_level_types`
 -- Indices de la tabla `emergency`
 --
 ALTER TABLE `emergency`
-  ADD PRIMARY KEY (`emergency_id`),
   ADD KEY `fk_emergency_people` (`people_id`);
 
 --
@@ -519,7 +510,6 @@ ALTER TABLE `meta_type`
 -- Indices de la tabla `ods`
 --
 ALTER TABLE `ods`
-  ADD PRIMARY KEY (`ods_id`),
   ADD UNIQUE KEY `meta_id` (`meta_id`);
 
 --
@@ -597,18 +587,6 @@ ALTER TABLE `activities`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
--- AUTO_INCREMENT de la tabla `differential_focus_id`
---
-ALTER TABLE `differential_focus_id`
-  MODIFY `differential_focus_id` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT de la tabla `educational_levels`
---
-ALTER TABLE `educational_levels`
-  MODIFY `educational_levels_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
-
---
 -- AUTO_INCREMENT de la tabla `focus_types`
 --
 ALTER TABLE `focus_types`
@@ -643,12 +621,6 @@ ALTER TABLE `marital_statuses`
 --
 ALTER TABLE `meta_type`
   MODIFY `meta_id` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT de la tabla `ods`
---
-ALTER TABLE `ods`
-  MODIFY `ods_id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT de la tabla `plan_desarrollo`
@@ -697,10 +669,10 @@ ALTER TABLE `contractor`
   ADD CONSTRAINT `fk_contractor_to_people` FOREIGN KEY (`people_id`) REFERENCES `people` (`people_id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
--- Filtros para la tabla `differential_focus_id`
+-- Filtros para la tabla `differential_focus`
 --
-ALTER TABLE `differential_focus_id`
-  ADD CONSTRAINT `differential_focus_id_ibfk_1` FOREIGN KEY (`people_id`) REFERENCES `people` (`people_id`) ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE `differential_focus`
+  ADD CONSTRAINT `differential_focus_ibfk_1` FOREIGN KEY (`people_id`) REFERENCES `people` (`people_id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Filtros para la tabla `educational_levels`
