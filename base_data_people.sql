@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 27-12-2024 a las 21:22:54
+-- Tiempo de generación: 27-12-2024 a las 22:41:02
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.1.25
 
@@ -74,7 +74,7 @@ CREATE TABLE `contractor` (
 CREATE TABLE `differential_focus` (
   `people_id` int(11) NOT NULL,
   `focus_name` enum('reintegrado','desmovilizado','extrema pobreza','poblacion victima del conflicto armado','poblacion LGBTIQ','personas en condicion de discapacidad','mujeres cabeza de familia','adultos mayores','ninos ninas y adolecentes') NOT NULL,
-  `grupo_etnico` enum('Negro, Afrocolombiano, raizal o palanquero (NARP)','Otro','Ninguno') NOT NULL DEFAULT 'Ninguno',
+  `grupo_etnico` enum('Negro','Otro','Ninguno','raizal','Afrocolombiano','palanquero (NARP)') NOT NULL DEFAULT 'Ninguno',
   `acreditacion_grupo_etnico` varchar(255) DEFAULT NULL,
   `certificado_discapacidad` tinyint(1) NOT NULL DEFAULT 0,
   `tipo_discapacidad` enum('Física','Auditiva','Visual','Intelectual','Psicológica','Ninguna') NOT NULL DEFAULT 'Ninguna',
@@ -142,7 +142,6 @@ CREATE TABLE `emergency` (
 --
 
 CREATE TABLE `employee_private_sector` (
-  `private_employment_id` int(11) NOT NULL,
   `people_id` int(11) DEFAULT NULL,
   `company` varchar(255) DEFAULT NULL,
   `employment_type` varchar(255) DEFAULT NULL,
@@ -199,7 +198,6 @@ INSERT INTO `focus_types` (`focus_id`, `focus_name`) VALUES
 --
 
 CREATE TABLE `formation_occupations` (
-  `formation_occupations` int(11) NOT NULL,
   `people_id` int(11) NOT NULL,
   `nivel_academico` enum('Primaria','Básica Secundaria','Bachiller','Técnico','Tecnólogo','Profesional','Especialización','Maestría','Doctorado','Ninguno') NOT NULL DEFAULT 'Ninguno',
   `ocupacion` enum('Empleado público','Empleado privado','Desempleado/a','Contratista del Estado','Emprendedor','Actividad informal') NOT NULL DEFAULT 'Desempleado/a',
@@ -237,7 +235,6 @@ CREATE TABLE `indicator_result` (
 --
 
 CREATE TABLE `marital_statuses` (
-  `marital_statuses_id` int(11) NOT NULL,
   `people_id` int(11) NOT NULL,
   `status_name` enum('soltero(@)','casado(@)','union libre','viudo(@)','separado(@)') NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -315,7 +312,6 @@ CREATE TABLE `plan_desarrollo` (
 --
 
 CREATE TABLE `population` (
-  `Population_id` int(11) NOT NULL,
   `people_id` int(11) DEFAULT NULL,
   `ethnic_group` varchar(255) DEFAULT NULL,
   `ethnic_accreditation` varchar(255) DEFAULT NULL,
@@ -342,7 +338,6 @@ CREATE TABLE `population` (
 --
 
 CREATE TABLE `program` (
-  `program_id` int(11) NOT NULL,
   `sector_id` int(11) NOT NULL,
   `program_name` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -354,7 +349,6 @@ CREATE TABLE `program` (
 --
 
 CREATE TABLE `public_sector_employee` (
-  `public_employment_id` int(11) NOT NULL,
   `people_id` int(11) DEFAULT NULL,
   `entity` varchar(255) DEFAULT NULL,
   `employment_type` varchar(255) DEFAULT NULL,
@@ -393,7 +387,6 @@ CREATE TABLE `strategic_line` (
 --
 
 CREATE TABLE `training` (
-  `Training_id` int(11) NOT NULL,
   `people_id` int(11) DEFAULT NULL,
   `educational_levels_id` int(11) DEFAULT NULL,
   `technical_title` varchar(255) DEFAULT NULL,
@@ -455,7 +448,6 @@ ALTER TABLE `emergency`
 -- Indices de la tabla `employee_private_sector`
 --
 ALTER TABLE `employee_private_sector`
-  ADD PRIMARY KEY (`private_employment_id`),
   ADD KEY `fk_private_sector_people` (`people_id`);
 
 --
@@ -476,7 +468,6 @@ ALTER TABLE `focus_types`
 -- Indices de la tabla `formation_occupations`
 --
 ALTER TABLE `formation_occupations`
-  ADD PRIMARY KEY (`formation_occupations`),
   ADD UNIQUE KEY `people_id` (`people_id`);
 
 --
@@ -497,7 +488,6 @@ ALTER TABLE `indicator_result`
 -- Indices de la tabla `marital_statuses`
 --
 ALTER TABLE `marital_statuses`
-  ADD PRIMARY KEY (`marital_statuses_id`),
   ADD UNIQUE KEY `people_id` (`people_id`);
 
 --
@@ -537,21 +527,18 @@ ALTER TABLE `plan_desarrollo`
 -- Indices de la tabla `population`
 --
 ALTER TABLE `population`
-  ADD PRIMARY KEY (`Population_id`),
   ADD KEY `fk_population_people` (`people_id`);
 
 --
 -- Indices de la tabla `program`
 --
 ALTER TABLE `program`
-  ADD PRIMARY KEY (`program_id`),
   ADD UNIQUE KEY `sector_id` (`sector_id`);
 
 --
 -- Indices de la tabla `public_sector_employee`
 --
 ALTER TABLE `public_sector_employee`
-  ADD PRIMARY KEY (`public_employment_id`),
   ADD KEY `fk_public_sector_people` (`people_id`);
 
 --
@@ -572,7 +559,6 @@ ALTER TABLE `strategic_line`
 -- Indices de la tabla `training`
 --
 ALTER TABLE `training`
-  ADD PRIMARY KEY (`Training_id`),
   ADD UNIQUE KEY `people_id` (`people_id`,`educational_levels_id`),
   ADD KEY `fk_training_to_educational_levels` (`educational_levels_id`);
 
@@ -593,12 +579,6 @@ ALTER TABLE `focus_types`
   MODIFY `focus_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
--- AUTO_INCREMENT de la tabla `formation_occupations`
---
-ALTER TABLE `formation_occupations`
-  MODIFY `formation_occupations` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
-
---
 -- AUTO_INCREMENT de la tabla `indicator`
 --
 ALTER TABLE `indicator`
@@ -611,12 +591,6 @@ ALTER TABLE `indicator_result`
   MODIFY `indicator_id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT de la tabla `marital_statuses`
---
-ALTER TABLE `marital_statuses`
-  MODIFY `marital_statuses_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
-
---
 -- AUTO_INCREMENT de la tabla `meta_type`
 --
 ALTER TABLE `meta_type`
@@ -627,12 +601,6 @@ ALTER TABLE `meta_type`
 --
 ALTER TABLE `plan_desarrollo`
   MODIFY `plan_id` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT de la tabla `program`
---
-ALTER TABLE `program`
-  MODIFY `program_id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT de la tabla `sector`
