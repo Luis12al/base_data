@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 28-12-2024 a las 05:56:10
+-- Tiempo de generación: 28-12-2024 a las 06:31:00
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.1.25
 
@@ -284,7 +284,6 @@ CREATE TABLE `people` (
   `tipo_documento` enum('registro civil','tarjeta de identidad','cedula de ciudadania','cedula de extranjeria','pasaporte','permiso de permanencia temporal') NOT NULL,
   `nombres_completos` varchar(255) NOT NULL,
   `correo` varchar(255) NOT NULL,
-  `genero` enum('Masculino','Femenino','Otro','Prefiero no decirlo') NOT NULL,
   `qr_code_path` varchar(255) DEFAULT NULL,
   `lugar_expedicion` varchar(255) DEFAULT NULL,
   `primer_apellido` varchar(255) NOT NULL,
@@ -535,8 +534,7 @@ ALTER TABLE `ods`
 --
 ALTER TABLE `people`
   ADD PRIMARY KEY (`people_id`),
-  ADD KEY `idx_full_name` (`nombres_completos`),
-  ADD KEY `idx_gender` (`genero`);
+  ADD KEY `idx_full_name` (`nombres_completos`);
 
 --
 -- Indices de la tabla `people_focus`
