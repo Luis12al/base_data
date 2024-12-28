@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 27-12-2024 a las 22:41:02
+-- Tiempo de generación: 28-12-2024 a las 03:04:12
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.1.25
 
@@ -32,6 +32,17 @@ CREATE TABLE `activities` (
   `people_id` int(11) NOT NULL,
   `activity_details` text NOT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `age_group`
+--
+
+CREATE TABLE `age_group` (
+  `people_id` int(11) NOT NULL,
+  `age` enum('niño/niña_(menor_a_12_años)','adolecente_(13-17_años)','joven_(18-28_años)','adulto_(28-59_años)','adulto_mayor_(mayo_60_años)') NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -371,6 +382,17 @@ CREATE TABLE `sector` (
 -- --------------------------------------------------------
 
 --
+-- Estructura de tabla para la tabla `sex`
+--
+
+CREATE TABLE `sex` (
+  `people_id` int(11) NOT NULL,
+  `sexo` enum('masculino','femenino','','') NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
 -- Estructura de tabla para la tabla `strategic_line`
 --
 
@@ -403,6 +425,12 @@ CREATE TABLE `training` (
 --
 ALTER TABLE `activities`
   ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `people_id` (`people_id`);
+
+--
+-- Indices de la tabla `age_group`
+--
+ALTER TABLE `age_group`
   ADD UNIQUE KEY `people_id` (`people_id`);
 
 --
