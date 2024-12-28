@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 28-12-2024 a las 03:04:12
+-- Tiempo de generación: 28-12-2024 a las 05:56:10
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.1.25
 
@@ -577,6 +577,12 @@ ALTER TABLE `sector`
   ADD UNIQUE KEY `plan_id` (`plan_id`);
 
 --
+-- Indices de la tabla `sex`
+--
+ALTER TABLE `sex`
+  ADD UNIQUE KEY `people_id` (`people_id`);
+
+--
 -- Indices de la tabla `strategic_line`
 --
 ALTER TABLE `strategic_line`
@@ -651,6 +657,12 @@ ALTER TABLE `strategic_line`
 --
 ALTER TABLE `activities`
   ADD CONSTRAINT `activities_ibfk_1` FOREIGN KEY (`people_id`) REFERENCES `people` (`people_id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Filtros para la tabla `age_group`
+--
+ALTER TABLE `age_group`
+  ADD CONSTRAINT `age_group_ibfk_1` FOREIGN KEY (`people_id`) REFERENCES `people` (`people_id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Filtros para la tabla `contact`
@@ -749,6 +761,12 @@ ALTER TABLE `program`
 --
 ALTER TABLE `public_sector_employee`
   ADD CONSTRAINT `fk_public_employee_to_people` FOREIGN KEY (`people_id`) REFERENCES `people` (`people_id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Filtros para la tabla `sex`
+--
+ALTER TABLE `sex`
+  ADD CONSTRAINT `sex_ibfk_1` FOREIGN KEY (`people_id`) REFERENCES `people` (`people_id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Filtros para la tabla `strategic_line`
